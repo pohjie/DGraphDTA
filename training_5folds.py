@@ -54,6 +54,7 @@ for dataset in datasets:
     best_mse = 1000
     best_test_mse = 1000
     best_epoch = -1
+    best_ci = -1
     model_file_name = 'models/model_' + model_st + '_' + dataset + '_' + str(fold) + '.model'
 
     for epoch in range(NUM_EPOCHS):
@@ -62,6 +63,9 @@ for dataset in datasets:
         G, P = predicting(model, device, valid_loader)
         val = get_mse(G, P)
         print('valid result:', val, best_mse)
+        ci = get_ci(G, P)
+        best_ci = max(best_ci, ci)
+        print('ci here is:', ci, '; best ci is:', best_ci)
         if val < best_mse:
             best_mse = val
             best_epoch = epoch + 1
