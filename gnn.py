@@ -42,7 +42,7 @@ class GNNNet(torch.nn.Module):
         # get protein input
         target_x, target_edge_index, target_batch = data_pro.x, data_pro.edge_index, data_pro.batch
         target_adj_t = data_pro.adj_t
-        pdb.set_trace()
+        # pdb.set_trace()
 
         # target_seq=data_pro.target
 
@@ -123,5 +123,4 @@ class GNNNet(torch.nn.Module):
         xc = self.dropout(xc)
         out = self.out(xc)
         print('concat and fc takes: ', time.time()-fc_time)
-        pdb.set_trace()
         return out
