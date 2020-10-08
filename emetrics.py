@@ -3,7 +3,7 @@ import subprocess
 from math import sqrt
 from sklearn.metrics import average_precision_score
 from scipy import stats
-
+from lifelines.utils import concordance_index
 
 def get_aupr(Y, P, threshold=7.0):
     # print(Y.shape,P.shape)
@@ -92,6 +92,7 @@ def get_spearman(y, f):
 
 
 def get_ci(y, f):
+    return concordance_index(y, f)
     ind = np.argsort(y)
     y = y[ind]
     f = f[ind]

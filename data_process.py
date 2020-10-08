@@ -9,7 +9,7 @@ from rdkit.Chem import MolFromSmiles
 import networkx as nx
 
 from utils import *
-
+import pdb
 
 # nomarlize
 def dic_normalize(dic):

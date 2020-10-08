@@ -1,8 +1,10 @@
 import os
 from torch_geometric.data import InMemoryDataset, DataLoader, Batch
 from torch_geometric import data as DATA
+import torch_geometric.transforms as T
 import torch
 
+import pdb
 
 # initialize the dataset
 class DTADataset(InMemoryDataset):
@@ -58,6 +60,8 @@ class DTADataset(InMemoryDataset):
                                     edge_index=torch.LongTensor(target_edge_index).transpose(1, 0),
                                     y=torch.FloatTensor([labels]))
             GCNData_pro.__setitem__('target_size', torch.LongTensor([target_size]))
+            GCNData_pro = data = T.ToSparseTensor(remove_edge_index=False)(GCNData_pro)
+
             # print(GCNData.target.size(), GCNData.target_edge_index.size(), GCNData.target_x.size())
             data_list_mol.append(GCNData_mol)
             data_list_pro.append(GCNData_pro)

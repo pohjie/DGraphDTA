@@ -2,12 +2,15 @@ import sys, os
 import torch
 import torch.nn as nn
 from torch_geometric.data import DataLoader
+import torch_geometric.transforms as T
 
 from gnn import GNNNet
 from utils import *
 from emetrics import *
 from data_process import create_dataset_for_5folds
 
+import time
+import pdb
 
 datasets = [['davis', 'kiba'][int(sys.argv[1])]]
 
@@ -58,12 +61,24 @@ for dataset in datasets:
     model_file_name = 'models/model_' + model_st + '_' + dataset + '_' + str(fold) + '.model'
 
     for epoch in range(NUM_EPOCHS):
+        now_time = time.time()
         train(model, device, train_loader, optimizer, epoch + 1)
+        # print('training the model takes: ', time.time()-now_time)
+
         print('predicting for valid data')
+        now_time = time.time()
         G, P = predicting(model, device, valid_loader)
+        # print('predicting takes: ', time.time()-now_time)
+
+        now_time = time.time()
         val = get_mse(G, P)
+        # print('retrieving val takes: ', time.time()-now_time)
         print('valid result:', val, best_mse)
+
+        now_time = time.time()
         ci = get_ci(G, P)
+        # print('calculating ci takes: ', time.time()-now_time)
+
         best_ci = max(best_ci, ci)
         print('ci here is:', ci, '; best ci is:', best_ci)
         if val < best_mse:
