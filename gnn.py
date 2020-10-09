@@ -42,7 +42,6 @@ class GNNNet(torch.nn.Module):
         # get protein input
         target_x, target_edge_index, target_batch = data_pro.x, data_pro.edge_index, data_pro.batch
         target_adj_t = data_pro.adj_t
-        # pdb.set_trace()
 
         # target_seq=data_pro.target
 
@@ -50,67 +49,56 @@ class GNNNet(torch.nn.Module):
         # print('mol_x', mol_x.size(), 'edge_index', mol_edge_index.size(), 'batch', mol_batch.size())
         # print('target_x', target_x.size(), 'target_edge_index', target_batch.size(), 'batch', target_batch.size())
 
-        start_mol_time = time.time()
-        mol_time = time.time()
         x = self.mol_conv1(mol_x, mol_edge_index)
         x = self.relu(x)
-        print('first conv takes: ', time.time()-mol_time)
+        # print('first conv takes: ', time.time()-mol_time)
 
-        mol_time = time.time()
         # mol_edge_index, _ = dropout_adj(mol_edge_index, training=self.training)
         x = self.mol_conv2(x, mol_edge_index)
         x = self.relu(x)
-        print('second conv takes: ', time.time()-mol_time)
+        # print('second conv takes: ', time.time()-mol_time)
 
-        mol_time = time.time()
         # mol_edge_index, _ = dropout_adj(mol_edge_index, training=self.training)
         x = self.mol_conv3(x, mol_edge_index)
         x = self.relu(x)
-        print('third conv takes: ', time.time()-mol_time)
+        # print('third conv takes: ', time.time()-mol_time)
 
-        mol_time = time.time()
         x = gep(x, mol_batch)  # global pooling
-        print('global pooling takes: ', time.time()-mol_time)
+        # print('global pooling takes: ', time.time()-mol_time)
 
         # flatten
         x = self.relu(self.mol_fc_g1(x))
         x = self.dropout(x)
         x = self.mol_fc_g2(x)
         x = self.dropout(x)
-        print('doing gnn on mol takes: ', time.time()-start_mol_time)
+        # print('doing gnn on mol takes: ', time.time()-start_mol_time)
 
-        pro_time = time.time()
-        xt = self.pro_conv1(target_x, target_edge_index)
+        xt = self.pro_conv1(target_x, target_adj_t)
         xt = self.relu(xt)
-        print('first prot conv takes: ', time.time()-pro_time)
+        # print('first prot conv takes: ', time.time()-pro_time)
 
-        pro_time = time.time()
         # target_edge_index, _ = dropout_adj(target_edge_index, training=self.training)
-        xt = self.pro_conv2(xt, target_edge_index)
+        xt = self.pro_conv2(xt, target_adj_t)
         xt = self.relu(xt)
-        print('second prot conv takes: ', time.time()-pro_time)
+        # print('second prot conv takes: ', time.time()-pro_time)
 
-        pro_time = time.time()
         # target_edge_index, _ = dropout_adj(target_edge_index, training=self.training)
-        xt = self.pro_conv3(xt, target_edge_index)
+        xt = self.pro_conv3(xt, target_adj_t)
         xt = self.relu(xt)
-        print('third prot conv takes: ', time.time()-pro_time)
+        # print('third prot conv takes: ', time.time()-pro_time)
 
-        pro_time = time.time()
         # xt = self.pro_conv4(xt, target_edge_index)
         # xt = self.relu(xt)
         xt = gep(xt, target_batch)  # global pooling
-        print('prot gep takes: ', time.time()-pro_time)
+        # print('prot gep takes: ', time.time()-pro_time)
 
-        pro_time = time.time()
         # flatten
         xt = self.relu(self.pro_fc_g1(xt))
         xt = self.dropout(xt)
         xt = self.pro_fc_g2(xt)
         xt = self.dropout(xt)
-        print('pro fc takes: ', time.time()-pro_time)
+        # print('pro fc takes: ', time.time()-pro_time)
 
-        fc_time = time.time()
         # print(x.size(), xt.size())
         # concat
         xc = torch.cat((x, xt), 1)
@@ -122,5 +110,5 @@ class GNNNet(torch.nn.Module):
         xc = self.relu(xc)
         xc = self.dropout(xc)
         out = self.out(xc)
-        print('concat and fc takes: ', time.time()-fc_time)
+        # print('concat and fc takes: ', time.time()-fc_time)
         return out

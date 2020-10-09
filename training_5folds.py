@@ -60,22 +60,19 @@ for dataset in datasets:
     best_ci = -1
     model_file_name = 'models/model_' + model_st + '_' + dataset + '_' + str(fold) + '.model'
 
+    start_time = time.time()
     for epoch in range(NUM_EPOCHS):
-        now_time = time.time()
         train(model, device, train_loader, optimizer, epoch + 1)
         # print('training the model takes: ', time.time()-now_time)
 
         print('predicting for valid data')
-        now_time = time.time()
         G, P = predicting(model, device, valid_loader)
         # print('predicting takes: ', time.time()-now_time)
 
-        now_time = time.time()
         val = get_mse(G, P)
         # print('retrieving val takes: ', time.time()-now_time)
         print('valid result:', val, best_mse)
 
-        now_time = time.time()
         ci = get_ci(G, P)
         # print('calculating ci takes: ', time.time()-now_time)
 
@@ -88,3 +85,4 @@ for dataset in datasets:
             print('rmse improved at epoch ', best_epoch, '; best_test_mse', best_mse, model_st, dataset, fold)
         else:
             print('No improvement since epoch ', best_epoch, '; best_test_mse', best_mse, model_st, dataset, fold)
+    print('time taken is: ', (time.time()-start_time)/3600)
