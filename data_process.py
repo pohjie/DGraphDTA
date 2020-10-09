@@ -10,7 +10,6 @@ import networkx as nx
 
 from utils import *
 
-
 # nomarlize
 def dic_normalize(dic):
     # print(dic)

@@ -8,6 +8,7 @@ from utils import *
 from emetrics import *
 from data_process import create_dataset_for_5folds
 
+import time
 
 datasets = [['davis', 'kiba'][int(sys.argv[1])]]
 
@@ -57,6 +58,7 @@ for dataset in datasets:
     best_ci = -1
     model_file_name = 'models/model_' + model_st + '_' + dataset + '_' + str(fold) + '.model'
 
+    start_time = time.time()
     for epoch in range(NUM_EPOCHS):
         train(model, device, train_loader, optimizer, epoch + 1)
         print('predicting for valid data')
@@ -73,3 +75,4 @@ for dataset in datasets:
             print('rmse improved at epoch ', best_epoch, '; best_test_mse', best_mse, model_st, dataset, fold)
         else:
             print('No improvement since epoch ', best_epoch, '; best_test_mse', best_mse, model_st, dataset, fold)
+    print('total time taken is: ',(time.time()-start_time)/3600)
