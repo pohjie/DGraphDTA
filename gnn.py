@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_geometric.nn import GCNConv, GATConv, global_max_pool as gmp, global_add_pool as gap,global_mean_pool as gep,global_sort_pool
+from torch_geometric.nn import SGConv,GINConv, GCNConv, GATConv, global_max_pool as gmp, global_add_pool as gap,global_mean_pool as gep,global_sort_pool
 from torch_geometric.utils import dropout_adj
 
 import pdb
@@ -21,9 +21,9 @@ class GNNNet(torch.nn.Module):
         self.mol_fc_g2 = torch.nn.Linear(1024, output_dim)
 
         # self.pro_conv1 = GCNConv(embed_dim, embed_dim)
-        self.pro_conv1 = GCNConv(num_features_pro, num_features_pro)
-        self.pro_conv2 = GCNConv(num_features_pro, num_features_pro * 2)
-        self.pro_conv3 = GCNConv(num_features_pro * 2, num_features_pro * 4)
+        self.pro_conv1 = SGConv(num_features_pro, num_features_pro)
+        self.pro_conv2 = SGConv(num_features_pro, num_features_pro * 2)
+        self.pro_conv3 = SGConv(num_features_pro * 2, num_features_pro * 4)
         # self.pro_conv4 = GCNConv(embed_dim * 4, embed_dim * 8)
         self.pro_fc_g1 = torch.nn.Linear(num_features_pro * 4, 1024)
         self.pro_fc_g2 = torch.nn.Linear(1024, output_dim)
@@ -38,10 +38,10 @@ class GNNNet(torch.nn.Module):
 
     def forward(self, data_mol, data_pro):
         # get graph input
-        mol_x, mol_edge_index, mol_batch = data_mol.x, data_mol.adj_t, data_mol.batch
+        mol_x, mol_edge_index, mol_batch = data_mol.x, data_mol.edge_index, data_mol.batch
         # get protein input
-        # target_x, target_edge_index, target_batch = data_pro.x, data_pro.edge_index, data_pro.batch
-        target_x, target_adj_t, target_batch = data_pro.x, data_pro.adj_t, data_pro.batch
+        target_x, target_edge_index, target_batch = data_pro.x, data_pro.edge_index, data_pro.batch
+        # target_x, target_adj_t, target_batch = data_pro.x, data_pro.adj_t, data_pro.batch
 
         # target_seq=data_pro.target
 
@@ -73,17 +73,17 @@ class GNNNet(torch.nn.Module):
         x = self.dropout(x)
         # print('doing gnn on mol takes: ', time.time()-start_mol_time)
 
-        xt = self.pro_conv1(target_x, target_adj_t)
+        xt = self.pro_conv1(target_x, target_edge_index)
         xt = self.relu(xt)
         # print('first prot conv takes: ', time.time()-pro_time)
 
         # target_edge_index, _ = dropout_adj(target_edge_index, training=self.training)
-        xt = self.pro_conv2(xt, target_adj_t)
+        xt = self.pro_conv2(xt, target_edge_index)
         xt = self.relu(xt)
         # print('second prot conv takes: ', time.time()-pro_time)
 
         # target_edge_index, _ = dropout_adj(target_edge_index, training=self.training)
-        xt = self.pro_conv3(xt, target_adj_t)
+        xt = self.pro_conv3(xt, target_edge_index)
         xt = self.relu(xt)
         # print('third prot conv takes: ', time.time()-pro_time)
 
