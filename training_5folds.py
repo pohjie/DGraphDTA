@@ -61,7 +61,11 @@ for dataset in datasets:
     model_file_name = 'models/model_' + model_st + '_' + dataset + '_' + str(fold) + '.model'
 
     start_time = time.time()
+    now_time = time.time()
     for epoch in range(NUM_EPOCHS):
+        if epoch % 10 == 0:
+            print('time for 10 epochs is: ', (time.time()-now_time)/60, ' minutes.')
+            now_time = time.time()
         train(model, device, train_loader, optimizer, epoch + 1)
         # print('training the model takes: ', time.time()-now_time)
 

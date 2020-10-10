@@ -55,12 +55,13 @@ class DTADataset(InMemoryDataset):
                                     edge_index=torch.LongTensor(edge_index).transpose(1, 0),
                                     y=torch.FloatTensor([labels]))
             GCNData_mol.__setitem__('c_size', torch.LongTensor([c_size]))
+            GCNData_mol = T.ToSparseTensor()(GCNData_mol)
 
             GCNData_pro = DATA.Data(x=torch.Tensor(target_features),
                                     edge_index=torch.LongTensor(target_edge_index).transpose(1, 0),
                                     y=torch.FloatTensor([labels]))
             GCNData_pro.__setitem__('target_size', torch.LongTensor([target_size]))
-            GCNData_pro = data = T.ToSparseTensor(remove_edge_index=False)(GCNData_pro)
+            GCNData_pro = T.ToSparseTensor()(GCNData_pro)
 
             # print(GCNData.target.size(), GCNData.target_edge_index.size(), GCNData.target_x.size())
             data_list_mol.append(GCNData_mol)

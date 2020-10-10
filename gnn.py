@@ -38,10 +38,10 @@ class GNNNet(torch.nn.Module):
 
     def forward(self, data_mol, data_pro):
         # get graph input
-        mol_x, mol_edge_index, mol_batch = data_mol.x, data_mol.edge_index, data_mol.batch
+        mol_x, mol_edge_index, mol_batch = data_mol.x, data_mol.adj_t, data_mol.batch
         # get protein input
-        target_x, target_edge_index, target_batch = data_pro.x, data_pro.edge_index, data_pro.batch
-        target_adj_t = data_pro.adj_t
+        # target_x, target_edge_index, target_batch = data_pro.x, data_pro.edge_index, data_pro.batch
+        target_x, target_adj_t, target_batch = data_pro.x, data_pro.adj_t, data_pro.batch
 
         # target_seq=data_pro.target
 
