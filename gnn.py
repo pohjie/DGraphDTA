@@ -21,9 +21,9 @@ class GNNNet(torch.nn.Module):
         self.mol_fc_g2 = torch.nn.Linear(1024, output_dim)
 
         # self.pro_conv1 = GCNConv(embed_dim, embed_dim)
-        self.pro_conv1 = SGConv(num_features_pro, num_features_pro)
-        self.pro_conv2 = SGConv(num_features_pro, num_features_pro * 2)
-        self.pro_conv3 = SGConv(num_features_pro * 2, num_features_pro * 4)
+        self.pro_conv1 = GCNConv(num_features_pro, num_features_pro, add_self_loops=False)
+        self.pro_conv2 = GCNConv(num_features_pro, num_features_pro * 2, add_self_loops=False)
+        self.pro_conv3 = GCNConv(num_features_pro * 2, num_features_pro * 4, add_self_loops=False)
         # self.pro_conv4 = GCNConv(embed_dim * 4, embed_dim * 8)
         self.pro_fc_g1 = torch.nn.Linear(num_features_pro * 4, 1024)
         self.pro_fc_g2 = torch.nn.Linear(1024, output_dim)

@@ -4,7 +4,18 @@ from torch_geometric import data as DATA
 import torch_geometric.transforms as T
 import torch
 
+from numba import jit
 import pdb
+import random
+
+@jit(nopython=True)
+def remove_edge(contact_map):
+    for i in range(contact_map.shape[0]):
+        for j in range(contact_map.shape[1]):
+            if contact_map[i, j] >= 0.5 and random.random() > 0.1:
+                contact_map[i, j] = 0
+
+    return contact_map
 
 # initialize the dataset
 class DTADataset(InMemoryDataset):
@@ -61,7 +72,7 @@ class DTADataset(InMemoryDataset):
                                     edge_index=torch.LongTensor(target_edge_index).transpose(1, 0),
                                     y=torch.FloatTensor([labels]))
             GCNData_pro.__setitem__('target_size', torch.LongTensor([target_size]))
-            # GCNData_pro = T.ToSparseTensor()(GCNData_pro)
+            #GCNData_pro = T.ToSparseTensor()(GCNData_pro)
 
             # print(GCNData.target.size(), GCNData.target_edge_index.size(), GCNData.target_x.size())
             data_list_mol.append(GCNData_mol)

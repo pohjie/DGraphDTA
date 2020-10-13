@@ -210,6 +210,8 @@ def target_to_graph(target_key, target_sequence, contact_dir, aln_dir):
     contact_file = os.path.join(contact_dir, target_key + '.npy')
     contact_map = np.load(contact_file)
     contact_map += np.matrix(np.eye(contact_map.shape[0]))
+    # remove 90% of where contact_map >= 0.5
+    contact_map = remove_edge(contact_map)
     index_row, index_col = np.where(contact_map >= 0.5)
     for i, j in zip(index_row, index_col):
         target_edge_index.append([i, j])
