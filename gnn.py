@@ -40,7 +40,7 @@ class GNNNet(torch.nn.Module):
         # get graph input
         mol_x, mol_edge_index, mol_batch = data_mol.x, data_mol.edge_index, data_mol.batch
         # get protein input
-        target_x, target_edge_index, target_batch = data_pro.x, data_pro.edge_index, data_pro.batch
+        target_x, target_edge_index, target_batch = data_pro.x, data_pro.adj_t, data_pro.batch
         # target_x, target_adj_t, target_batch = data_pro.x, data_pro.adj_t, data_pro.batch
 
         # target_seq=data_pro.target
@@ -82,10 +82,12 @@ class GNNNet(torch.nn.Module):
         xt = self.relu(xt)
         # print('second prot conv takes: ', time.time()-pro_time)
 
+        pro_time = time.time()
         # target_edge_index, _ = dropout_adj(target_edge_index, training=self.training)
         xt = self.pro_conv3(xt, target_edge_index)
         xt = self.relu(xt)
-        # print('third prot conv takes: ', time.time()-pro_time)
+        print('third prot conv takes: ', time.time()-pro_time)
+        # pdb.set_trace()
 
         # xt = self.pro_conv4(xt, target_edge_index)
         # xt = self.relu(xt)
